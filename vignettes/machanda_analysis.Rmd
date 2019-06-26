@@ -100,10 +100,10 @@ ret.ord.params <- ret.ord %>%
 ret.ord.params <- as.data.frame(do.call(rbind, ret.ord.params))
 
 ret.ord.params.summ <- apply(ret.ord.params, 2, summary)
-curve <- ret.ord.params.summ[4,]
+means <- ret.ord.params.summ[4,]
 
 
-curve(mod.new$par[1]*(1-1/(1 +(x/mod.new$par[2])^mod.new$par[5]+(x/mod.new$par[3])^mod.new$par[6]+(x/mod.new$par[4])^mod.new$par[7])), add=TRUE,lwd=2,lty=2,col='black', ylab='Body Length')
+curve(means[1]*(1-1/(1 +(x/means[2])^means[5]+(x/means[3])^means[6]+(x/means[4])^means[7])), add=TRUE,lwd=2,lty=2,col='black', ylab='Body Length', xlim = c(0,60))
 
 
 ```
