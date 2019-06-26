@@ -1,0 +1,5 @@
+^\.travis\.yml$
+^docs$
+^_pkgdown\.yml$
+^JPPSiterweight\.Rproj$
+^\.Rproj\.user$

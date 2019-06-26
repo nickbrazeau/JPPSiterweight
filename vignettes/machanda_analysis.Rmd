@@ -1,0 +1,147 @@
+---
+title: "Recreating the Analysis from _Machanda et al. 2019_-Growing Up Chimpanzee"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = F,
+  message = F
+)
+```
+
+
+# Introduction
+```{r}
+library(tidyverse)
+
+```
+
+
+# Data 
+Here we will use the data from _Machanda et al. 2019_ to explore the JPPS functionality. 
+
+```{r}
+
+# TODO usethis::use_data 
+# 
+dat <- readxl::read_excel(path = "~/Downloads/average body area and length_kanyawara 2012.xlsx", sheet = 1) %>% 
+  magrittr::set_colnames(tolower(colnames(.)))
+
+dat <- readxl::read_excel(path = "~/Downloads/JHE_Quality Compare_July_2015.xlsx") %>% 
+  magrittr::set_colnames(tolower(colnames(.)))
+
+dat <- dat %>% 
+  dplyr::group_by(chimpid, sex) %>% 
+  dplyr::summarise(
+    age = mean(age),
+    avg.length = mean(mleng_new)
+  ) %>% 
+  dplyr::mutate(sex = factor(sex, levels = c(0,1), labels = c("F", "M")))
+
+```
+
+These are some parameters we are going to need later...
+```{r}
+
+adult.meanlength.all <- mean( dat$avg.length[dat$age > 15] )
+adult.meanlength.male <- mean( dat$avg.length[dat$age > 15 & dat$sex == "M"] )
+adult.meanlength.female <- mean( dat$avg.length[dat$age > 15 & dat$sex == "F"] )
+
+
+# from Leigh & Shea 1996 (Yerkes data)
+par.init.all <- c(B = adult.meanlength.all,
+                  D1 = 8.835 , D2 = 9.450, D3 = 28.465, C1 = 3.355, C2 = 12.990, C3 = 1.005) 
+                  # these are averages
+
+par.init.female <- c(B = adult.meanlength.female, 
+                     D1 = 8.48 , D2 = 8.93, D3 = 44.81, C1 = 1.92, C2 = 6.95, C3 = 0.79)
+
+par.init.male <- c(B = adult.meanlength.male,
+                   D1 = 9.19 , D2 = 9.97, D3 = 12.12, C1 = 4.79, C2 = 19.03, C3 = 1.22)
+
+
+```
+
+
+
+# Model Specifications
+**Words**
+We will then cycle through repitition and store the model parameters and residuals. 
+```{r}
+reps <- 1e2
+```
+
+## Ordiniary (Unweighted) Models
+
+```{r}
+
+# faster for loop
+ret.ord <- parallel::mclapply(1:reps, FUN = function(x){ 
+  JPPSiterweight::optimize.jpps.ord(
+    ind.obs = dat$age,
+    dep.obs = dat$avg.length,
+    par = par.init.female)
+})
+
+
+ret.ord.params <- ret.ord %>% 
+  purrr::map(., "params") 
+  
+ret.ord.params <- as.data.frame(do.call(rbind, ret.ord.params))
+
+ret.ord.params.summ <- apply(ret.ord.params, 2, summary)
+curve <- ret.ord.params.summ[4,]
+
+
+curve(mod.new$par[1]*(1-1/(1 +(x/mod.new$par[2])^mod.new$par[5]+(x/mod.new$par[3])^mod.new$par[6]+(x/mod.new$par[4])^mod.new$par[7])), add=TRUE,lwd=2,lty=2,col='black', ylab='Body Length')
+
+
+```
+
+
+
+## Weighted Models 
+
+First we need a vector of "weights" to reweight our observations. This is largely to account for the heteroskedasticity in the model. 
+```{r}
+
+maxit <- 500 #max iterations for one pass of the iteratively weighted optimization
+reps <- 1000 #number of model parameter samples to create
+
+
+
+```
+
+
+We are looping through the model under the assumption of the same starting values
+
+```{r}
+
+
+optimize.iteratively_reweight(par = par.init,
+                              modelfunc = optimize_jpps_fit,
+                              weightfunc = fit_linear_regression,
+                              optim.method = "SANN",
+                              iter.method = "Nelder",
+                              tol = 1e-9, # tolerance
+                              ind.obs = dat$age,
+                              dep.obs = dat$length)
+
+
+
+
+```
+
+
+
+
