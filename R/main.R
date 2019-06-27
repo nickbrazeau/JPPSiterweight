@@ -7,7 +7,7 @@
 #' @param y numeric vector; predicted value of y (y-hat; regressand)
 #' @param par numeric vector; model parameter estimates
 #' @return res; returns the residuals of the model
-
+#' @export
 
 
 fit_jpps <- function(x, y, par) {
@@ -30,7 +30,7 @@ fit_jpps <- function(x, y, par) {
 #' @param a numeric vector; observations (e.g regressors)
 #' @param b numeric vector; predicted value of y (y-hat; regressand)
 #' @param par numeric vectors; model parameter estimates
-
+#' @export
 
 fit_linear_regression <-function(par, a, b){
   b0 <- par[1]
@@ -50,14 +50,14 @@ fit_linear_regression <-function(par, a, b){
 #' @param dep.obs numeric vector; dependent observations that we are trying to fit (e.g. Y)
 #' @export
 
-optimize.jpps.ord <- function(par,
+optimize.jpps.ord <- function(params,
                               optim.method = "SANN",
                               ind.obs,
                               dep.obs){
   mod.new <- optim(par = params,
 
                    fn = function(x, y, par){
-                    res <- JPPSiterweight::fit_jpps(x, y, par)
+                    res <- fit_jpps(x, y, par)
                     ret <- sum((res)^2) # optimize by minimizing residual sums of squares
                     return(ret)
                     },
@@ -93,6 +93,7 @@ optimize.jpps.iteratively_reweight <- function(params,
                                                optim.method = "SANN",
                                                iter.method = "Nelder",
                                                tol,
+                                               maxit,
                                                ind.obs,
                                                dep.obs){
   # TODO test that / catches
@@ -100,7 +101,7 @@ optimize.jpps.iteratively_reweight <- function(params,
   # First fit init model
   mod.new <- optim(par = params,
                    fn = function(x, y, par){
-                     res <- JPPSiterweight::fit_jpps(x, y, par)
+                     res <- fit_jpps(x, y, par)
                      ret <- sum((res)^2) # optimize by minimizing residual sums of squares
                      return(ret)
                    },
@@ -123,7 +124,8 @@ optimize.jpps.iteratively_reweight <- function(params,
     # res <- dep.obs - yhat #residuals
 
     # store old model coefficients
-    oldcof <- as.vector(mod.new$par)
+    names(mod.new$par) <- c("B", "D1", "D2", "D3", "C1", "C2", "C3")
+    oldcof <- mod.new$par
     # get model residuals
     res <- fit_jpps(x = ind.obs, y = dep.obs, par = oldcof)
 
@@ -141,9 +143,9 @@ optimize.jpps.iteratively_reweight <- function(params,
 
     #  mod.new<-optim(par=as.vector(mod.new$par),weight.func,x=dat$Age,y=dat$Avg.Size,w=w.new,control=list(abstol=tol),method="SANN") #run optimization again with new weights
     #
-    mod.new <- optim(par=as.vector(mod.new$par),
+    mod.new <- optim(par= mod.new$par,
                      fn = function(par, x, y, w){
-                       res <- JPPSiterweight::fit_jpps(x, y, par)
+                       res <- fit_jpps(x, y, par)
                        ret <- sum(w*(res)^2) # now account for weights in sum of squares
                        return(ret)
                      },
@@ -151,7 +153,7 @@ optimize.jpps.iteratively_reweight <- function(params,
                      y = dep.obs,
                      w = w.new,
                      control=list(abstol=tol),
-                     method = method.optim) #run optimization again with new weights
+                     method = optim.method) #run optimization again with new weights
 
 
     newcof <- as.vector(mod.new$par)
