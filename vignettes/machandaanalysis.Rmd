@@ -1,5 +1,5 @@
 ---
-title: "Recreating the Analysis from _Machanda et al. 2019_-Growing Up Chimpanzee"
+title: "Recreating the Analysis from Machanda et al. 2019 - Growing Up Chimpanzee"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -135,25 +135,14 @@ predictions_veloc.CI <- dplyr::left_join(predictions_veloc.lowerCI, predictions_
 #### Plotting the Outcome
 Now that we have predictions, we want to plot the growth trajectory and the velocity interval. We are going to explore the `cowplot` package and an inset plot with growth trajectory and growth, respectively. 
 
-```{r, fig.width=5.5, fig.height=4, fig.align='center'}
+```{r, fig.width=8.25, fig.height=6, fig.align='center'}
 
 # you can really custom the plot however you want with ggplot
 grwth_traj.plot <- ggplot() +
   geom_smooth(data = predictions_grwth, aes(x = age, y = outcome), color = "#08306b") +
   geom_ribbon(data = predictions_grwth.CI, aes(x = age, ymin = outcome.y, ymax = outcome.x), color = NA, fill = "#c6dbef", alpha = 0.4) +
-  xlab("Age (years)") + ylab("Growth (cm)") + 
-  # ggtitle("Growth over Age for All Individuals") +
-  theme(plot.title = element_text(family = "Helvetica", face = "bold", hjust = 0.5, size = 10), 
-                     axis.title = element_text(family = "Helvetica", face = "bold", hjust = 0.5, size = 8), 
-                     axis.text = element_text(family = "Helvetica", hjust = 0.5, size = 7), 
-                     legend.position = "right",
-                     legend.title = element_text(family = "Helvetica", face = "bold", vjust = 0.85, size = 8),
-                     legend.text = element_text(family = "Helvetica", hjust = 0.5, vjust = 0.5, angle = 90, size = 7),
-                     panel.background = element_rect(fill = "transparent"),
-                     plot.background = element_rect(fill = "transparent"),
-                     panel.grid = element_blank(),
-                     panel.border = element_blank())
-
+  xlab("Age (years)") + ylab("Growth (cm)") +
+  theme_bw()
 
 
 # you can really custom the plot however you want with ggplot
@@ -164,16 +153,7 @@ grwth_veloc.plot <- predictions_veloc %>%
   xlab("Age (years)") + ylab("Growth (cm/year)") + 
   ggtitle("Growth Trajectories by Age for All Individuals") +
   ylim(0,8) +
-  theme(plot.title = element_text(family = "Helvetica", face = "bold", hjust = 0.5, size = 14), 
-                     axis.title = element_text(family = "Helvetica", face = "bold", hjust = 0.5, size = 12), 
-                     axis.text = element_text(family = "Helvetica", hjust = 0.5, size = 11), 
-                     legend.position = "right",
-                     legend.title = element_text(family = "Helvetica", face = "bold", vjust = 0.85, size = 12),
-                     legend.text = element_text(family = "Helvetica", hjust = 0.5, vjust = 0.5, angle = 90, size = 10),
-                     panel.background = element_rect(fill = "transparent"),
-                     plot.background = element_rect(fill = "transparent"),
-                     panel.grid = element_blank(),
-                     panel.border = element_blank())
+  theme_bw()
 
 
 
