@@ -1,13 +1,10 @@
 Package: JPPSiterweight
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
-Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com")
+Authors@R: person("First", "Last", email = "first.last@example.com",
+                  role = c("aut", "cre"))
 Description: What the package does (one paragraph).
-License: What license it uses
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
@@ -15,6 +12,7 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
+    pkgdown,
     tidyverse
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1

@@ -1,10 +1,10 @@
 
 #' @name fit_jpps
-#' @description The JPPS curve (internal use). The function takes the observed data and
+#' @description The JPPS curve. The function takes the observed data and
 #' fits the model under our specified parameters and returns the residuals.
 #' Assumes an ORDINIARY nonlinear least squares model.
-#' @param x numeric vector; observations (e.g regressors)
-#' @param y numeric vector; predicted value of y (y-hat; regressand)
+#' @param x numeric vector; observations
+#' @param y numeric vector; predicted value of y
 #' @param par numeric vector; model parameter estimates
 #' @return res; returns the residuals of the model
 #' @export
@@ -27,8 +27,8 @@ fit_jpps <- function(x, y, par) {
 
 #' @name fit_linear_regression
 #' @description
-#' @param a numeric vector; observations (e.g regressors)
-#' @param b numeric vector; predicted value of y (y-hat; regressand)
+#' @param a numeric vector; observations
+#' @param b numeric vector; predicted value of y
 #' @param par numeric vectors; model parameter estimates
 #' @export
 
@@ -46,8 +46,8 @@ fit_linear_regression <-function(par, a, b){
 #' @name optimize.jpps.ord
 #' @description
 #' @param par named numeric vector; JPPS parameter estimates
-#' @param ind.obs numeric vector; independent observations that we are trying to fit (e.g. X)
-#' @param dep.obs numeric vector; dependent observations that we are trying to fit (e.g. Y)
+#' @param ind.obs numeric vector; independent observations that we are trying to fit
+#' @param dep.obs numeric vector; dependent observations that we are trying to fit
 #' @export
 
 optimize.jpps.ord <- function(params,
@@ -83,8 +83,8 @@ optimize.jpps.ord <- function(params,
 #' @param par named numeric vector; JPPS parameter estimates
 #' @param optim.method string; optimizer to use in the optim function for global fit
 #' @param optim.method string; optimizer to use in the optim function for weight calculations
-#' @param ind.obs numeric vector; independent observations that we are trying to fit (e.g. X)
-#' @param dep.obs numeric vector; dependent observations that we are trying to fit (e.g. Y)
+#' @param ind.obs numeric vector; independent observations that we are trying to fit
+#' @param dep.obs numeric vector; dependent observations that we are trying to fit
 #' @param tol numeric; tolerance to break iterative reweighting
 #' @export
 

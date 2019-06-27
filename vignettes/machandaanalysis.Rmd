@@ -135,7 +135,7 @@ predictions_veloc.CI <- dplyr::left_join(predictions_veloc.lowerCI, predictions_
 #### Plotting the Outcome
 Now that we have predictions, we want to plot the growth trajectory and the velocity interval. We are going to explore the `cowplot` package and an inset plot with growth trajectory and growth, respectively. 
 
-```{r}
+```{r, fig.width=5.5, fig.height=4, fig.align='center'}
 
 # you can really custom the plot however you want with ggplot
 grwth_traj.plot <- ggplot() +
@@ -185,9 +185,9 @@ fullplot <- ggdraw() +
 plot(fullplot)
 
 # when we are satisified with the placements, we can write this out for publication
-svglite::svglite(file = "~/Desktop/full_comb_growthtraj.svg", width = 11, height = 8)
-plot(fullplot)
-graphics.off()
+#svglite::svglite(file = "~/Desktop/full_comb_growthtraj.svg", width = 11, height = 8)
+#plot(fullplot)
+#graphics.off()
 
 
 ```
